@@ -13,8 +13,8 @@ module.exports = function() {
       if (config.isLocal) {
         try {
           // Is this required for security reasons??
-          const p = req.path.replace(/\.\./g, '.');
-          doBabel(req, res, fs.readFileSync(path.join(config.path, p)));
+          const p = req.path.replace(/\.\./g, '.').replace(/\\/g, '/');
+          doBabel(req, res, fs.readFileSync(path.join(config.path, p).replace(/\\C:/gi, 'C:')));
         } catch (e) {
           console.log(e);
           console.log('failed to transform', config.proxyTarget, req.path);
@@ -60,20 +60,24 @@ function doBabel(req, res, txt) {
         {
           targets: {
             browsers: [
-              'last 2 chrome versions',
-              'last 2 firefox versions',
-              'last 1 safari version',
-              'last 2 edge versions'
+              'last 88 chrome versions',
+              'last 88 firefox versions',
+              'last 5 safari version',
+              'last 88 edge versions'
             ]
-          }
+          },
+          "modules": false,
         }
-      ]
+      ],
+      ['es2015', {"modules": false}],
+      ['stage-2'],
     ],
     plugins: [
-      'transform-es2015-modules-amd-if-required',
+      ///'transform-es2015-modules-amd-if-required',
       'transform-object-rest-spread'
     ],
-    minified: false,
+    compact: false, ///'auto',
+    minified: true, ///false,
     ast: false
   });
   res.set('Content-Type', 'application/javascript');
